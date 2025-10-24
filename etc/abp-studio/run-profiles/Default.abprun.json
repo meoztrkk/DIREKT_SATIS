@@ -1,0 +1,70 @@
+﻿{
+  "applications": {
+    "DIREKT_SATIS.Web.Public": {
+      "type": "dotnet-project",
+      "launchUrl": "https://localhost:44391",
+      "path": "../../../src/DIREKT_SATIS.Web.Public/DIREKT_SATIS.Web.Public.csproj",
+      "kubernetesService": ".*-webpublic$",
+      "healthCheckEndpoint": "/health-status",
+      "healthUiEndpoint": "/health-ui",
+      "execution": {
+        "order": 1
+      }
+    },
+    "DIREKT_SATIS.AuthServer": {
+      "type": "dotnet-project",
+      "launchUrl": "https://localhost:44317",
+      "path": "../../../src/DIREKT_SATIS.AuthServer/DIREKT_SATIS.AuthServer.csproj",
+      "kubernetesService": ".*-authserver$",
+      "healthCheckEndpoint": "/health-status",
+      "healthUiEndpoint": "/health-ui",
+      "execution": {
+        "order": 3
+      }
+    },
+    "DIREKT_SATIS.HttpApi.Host": {
+      "type": "dotnet-project",
+      "launchUrl": "https://localhost:44379",
+      "path": "../../../src/DIREKT_SATIS.HttpApi.Host/DIREKT_SATIS.HttpApi.Host.csproj",
+      "kubernetesService": ".*-httpapihost$",
+      "healthCheckEndpoint": "/health-status",
+      "healthUiEndpoint": "/health-ui",
+      "execution": {
+        "order": 4
+      }
+    },
+    "DIREKT_SATIS.Angular": {
+      "type": "cli",
+      "workingDirectory": "../../../angular",
+      "startCommand": "./start.ps1",
+      "launchUrl": "http://localhost:4200",
+      "kubernetesService": ".*-angular$",
+      "execution": {
+        "order": 2
+      }    
+    }
+  },
+  "containers": {
+    "serviceName": "DIREKT_SATIS-Containers",
+    "files": {
+      "../../docker/containers/redis.yml": {
+      },
+      "../../docker/containers/rabbitmq.yml": {
+      }
+    }
+  },
+  "tasks":{
+    "Initialize Solution":{
+    "type": "cli",
+    "runOnSolutionOpen": true,
+    "startCommand": "etc/scripts/initialize-solution.ps1",
+    "workingDirectory": "../../../"
+    },
+    "Migrate Database":{
+    "type": "cli",
+    "runOnSolutionOpen": false,
+    "startCommand": "etc/scripts/migrate-database.ps1",
+    "workingDirectory": "../../../"
+    }
+  }
+}

@@ -1,0 +1,217 @@
+{
+  "id": "1cd325c4-120e-4a15-85e1-124bfac60c4a",
+  "creationTime": "10/24/2025 18:12:36 +00:00",
+  "template": "app",
+  "versions": {
+    "LeptonX": "4.3.5",
+    "AbpFramework": "9.3.5",
+    "AbpCommercial": "9.3.5",
+    "AbpStudio": "1.4.1",
+    "TargetDotnetFramework": "net9.0"
+  },
+  "modules": {
+    "DIREKT_SATIS": {
+      "path": "DIREKT_SATIS.abpmdl"
+    }
+  },
+  "runProfiles": {
+    "Default": {
+      "path": "etc/abp-studio/run-profiles/Default.abprun.json"
+    }
+  },
+  "k8sProfiles": {
+    "local": {
+      "path": "etc/abp-studio/k8s-profiles/local.abpk8s.json"
+    }
+  },
+  "commands": {
+    "helmBuildDotnetImage": {
+      "triggerTargets": [
+        "HELM_CHARTS_ROOT",
+        "HELM_MAIN_CHART",
+        "HELM_SUB_CHART"
+      ],
+      "executionTargets": [
+        "HELM_MAIN_CHART",
+        "HELM_SUB_CHART"
+      ],
+      "displayName": "Build Docker Image(s)",
+      "workingDirectory": "etc/helm",
+      "terminalCommand": "./build-image.ps1 -ProjectPath {{metadata.projectPath}} -ImageName {{metadata.imageName}} -ProjectType {{metadata.projectType}}",
+      "condition": "{{metadata.projectPath != null && metadata.imageName != null && metadata.projectType != null}}"
+    },
+    "helmInstallChart": {
+      "triggerTargets": [
+        "HELM_CHARTS_ROOT",
+        "HELM_MAIN_CHART"
+      ],
+      "executionTargets": [
+        "HELM_MAIN_CHART"
+      ],
+      "displayName": "Install Chart(s)",
+      "workingDirectory": "etc/helm",
+      "terminalCommand": "./install.ps1 -ChartName {{chart.name}} -Namespace {{profile.namespace}} -ReleaseName {{chart.name}}-{{profile.name}} -DotnetEnvironment {{metadata.dotnetEnvironment}} {{~if metadata.k8ssuffix}} -User {{metadata.k8ssuffix}}{{end}}",
+      "requireConfirmation": "true",
+      "confirmationText": "Are you sure to install the chart(s) for the profile {{ profile.name }}?"
+    },
+    "helmUninstallChart": {
+      "triggerTargets": [
+        "HELM_CHARTS_ROOT",
+        "HELM_MAIN_CHART"
+      ],
+      "executionTargets": [
+        "HELM_MAIN_CHART"
+      ],
+      "displayName": "Uninstall Chart(s)",
+      "workingDirectory": "etc/helm",
+      "terminalCommand": "./uninstall.ps1 -Namespace {{profile.namespace}} -ReleaseName {{chart.name}}-{{profile.name}} {{~if metadata.k8ssuffix}} -User {{metadata.k8ssuffix}}{{end}}",
+      "requireConfirmation": "true",
+      "confirmationText": "Are you sure to uninstall the chart(s) for the profile {{profile.name}}?"
+    },
+    "kubernetesRedeploy": {
+      "triggerTargets": [
+        "KUBERNETES_SERVICE"
+      ],
+      "executionTargets": [
+        "KUBERNETES_SERVICE"
+      ],
+      "displayName": "Redeploy",
+      "workingDirectory": "etc/helm",
+      "terminalCommand": "./build-image.ps1 -ProjectPath {{chart.metadata.projectPath}} -ImageName {{chart.metadata.imageName}} -ProjectType {{chart.metadata.projectType}} &&& ./install.ps1 -ChartName {{mainChart.name}} -Namespace {{profile.namespace}} -ReleaseName {{mainChart.name}}-{{profile.name}} -DotnetEnvironment {{mainChart.metadata.dotnetEnvironment}} {{~if metadata.k8ssuffix}} -User {{metadata.k8ssuffix}}{{end}}",
+      "requireConfirmation": "true",
+      "confirmationText": "Are you sure to redeploy the related chart '{{chart.name}}' for the service '{{name}}'?",
+      "condition": "{{chart != null && chart.metadata.projectPath != null && chart.metadata.imageName != null && chart.metadata.projectType != null}}"
+    },
+    "createTlsSecret": {
+      "triggerTargets": [
+        "HELM_CHARTS_ROOT"
+      ],
+      "executionTargets": [
+        "HELM_CHARTS_ROOT"
+      ],
+      "displayName": "Create Self-Signed TLS secret",
+      "workingDirectory": "etc/helm",
+      "terminalCommand": "./create-tls-secrets.ps1 -Namespace {{profile.namespace}} {{~if metadata.k8ssuffix}} -User {{metadata.k8ssuffix}}{{end}}"
+    }
+  },
+  "helm": {
+    "charts": {
+      "direkt_satis": {
+        "name": "direkt_satis",
+        "path": "etc/helm/direkt_satis",
+        "charts": {
+          "angular": {
+            "name": "angular",
+            "path": "etc/helm/direkt_satis/charts/angular",
+            "metadata": {
+              "projectPath": "../../angular",
+              "imageName": "direkt_satis/angular",
+              "projectType": "angular"
+            },
+            "services": [
+              ".*-angular$"
+            ]
+          },
+          "authserver": {
+            "name": "authserver",
+            "path": "etc/helm/direkt_satis/charts/authserver",
+            "metadata": {
+              "projectPath": "../../src/DIREKT_SATIS.AuthServer/DIREKT_SATIS.AuthServer.csproj",
+              "imageName": "direkt_satis/authserver",
+              "projectType": "dotnet"
+            },
+            "services": [
+              ".*-authserver"
+            ]
+          },
+          "dbmigrator": {
+            "name": "dbmigrator",
+            "path": "etc/helm/direkt_satis/charts/dbmigrator",
+            "metadata": {
+              "projectPath": "../../src/DIREKT_SATIS.DbMigrator/DIREKT_SATIS.DbMigrator.csproj",
+              "imageName": "direkt_satis/dbmigrator",
+              "projectType": "dotnet"
+            },
+            "services": [
+              ".*-dbmigrator"
+            ]
+          },
+          "httpapihost": {
+            "name": "httpapihost",
+            "path": "etc/helm/direkt_satis/charts/httpapihost",
+            "metadata": {
+              "projectPath": "../../src/DIREKT_SATIS.HttpApi.Host/DIREKT_SATIS.HttpApi.Host.csproj",
+              "imageName": "direkt_satis/httpapihost",
+              "projectType": "dotnet"
+            },
+            "services": [
+              ".*-httpapihost"
+            ]
+          },
+          "rabbitmq": {
+            "name": "rabbitmq",
+            "path": "etc/helm/direkt_satis/charts/rabbitmq"
+          },
+          "redis": {
+            "name": "redis",
+            "path": "etc/helm/direkt_satis/charts/redis"
+          },
+          "sqlserver": {
+            "name": "sqlserver",
+            "path": "etc/helm/direkt_satis/charts/sqlserver"
+          },
+          "webpublic": {
+            "name": "webpublic",
+            "path": "etc/helm/direkt_satis/charts/webpublic",
+            "metadata": {
+              "projectPath": "../../src/DIREKT_SATIS.Web.Public/DIREKT_SATIS.Web.Public.csproj",
+              "imageName": "direkt_satis/webpublic",
+              "projectType": "dotnet"
+            },
+            "services": [
+              ".*-webpublic"
+            ]
+          },
+        },
+        "metadata": {}
+      }
+    }
+  },
+  "options": {
+    "httpRequests": {
+      "ignoredUrls": [
+      
+      ]
+    }
+  },
+  "creatingStudioConfiguration": {
+    "template": "app",
+    "createdAbpStudioVersion": "1.4.1",
+    "tiered": "true",
+    "runInstallLibs": "true",
+    "useLocalReferences": "false",
+    "multiTenancy": "false",
+    "includeTests": "true",
+    "kubernetesConfiguration": "true",
+    "uiFramework": "angular",
+    "mobileFramework": "none",
+    "distributedEventBus": "rabbitmq",
+    "databaseProvider": "ef",
+    "runDbMigrator": "true",
+    "databaseManagementSystem": "sqlserver",
+    "separateTenantSchema": "false",
+    "createInitialMigration": "true",
+    "theme": "leptonx",
+    "themeStyle": "system",
+    "themeMenuPlacement": "side",
+    "mobileFramework": "none",
+    "progressiveWebApp": "false",
+    "runProgressiveWebAppSupport": "false",
+    "publicWebsite": "true",
+    "optionalModules": "GDPR FileManagement TextTemplateManagement LanguageManagement AuditLogging Chat OpenIddictAdmin",
+    "socialLogin": "true",
+    "selectedLanguages": ["Turkish", "Arabic", "English", "German (Germany)", ],
+    "defaultLanguage": "Turkish",
+    "createCommand": "abp new DIREKT_SATIS -t app --tiered --ui-framework angular --database-provider ef --database-management-system sqlserver --theme leptonx --public-website --without-cms-kit --sample-crud-page --dont-run-bundling --no-multi-tenancy -no-saas -chat -file-management"
+  }
+}

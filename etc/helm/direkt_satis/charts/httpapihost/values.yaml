@@ -1,0 +1,4 @@
+image:
+  repository: "direkt_satis/httpapihost"
+  tag: "latest"
+  pullPolicy: IfNotPresent

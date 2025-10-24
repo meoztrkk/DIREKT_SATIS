@@ -1,0 +1,146 @@
+{
+  "template": "app",
+  "imports": {
+    "Volo.Abp.LeptonXTheme": {
+      "version": "4.3.5",
+      "isInstalled": true
+    },
+    "Volo.Abp.TextTemplateManagement": {
+      "version": "9.3.5",
+      "isInstalled": true,
+      "creationTime": "10/24/2025 18:12:36 +00:00"
+    },
+    "Volo.Chat": {
+      "version": "9.3.5",
+      "isInstalled": true,
+      "creationTime": "10/24/2025 18:12:36 +00:00" 
+    },
+    "Volo.Abp.LanguageManagement": {
+      "version": "9.3.5",
+      "isInstalled": true,
+      "creationTime": "10/24/2025 18:12:36 +00:00"
+    },
+    "Volo.FileManagement": {
+      "version": "9.3.5",
+      "isInstalled": true,
+      "creationTime": "10/24/2025 18:12:36 +00:00"
+    },
+    "Volo.Abp.OpenIddict.Pro": {
+      "version": "9.3.5",
+      "isInstalled": true,
+      "creationTime": "10/24/2025 18:12:36 +00:00"
+    },
+    "Volo.Abp.Gdpr": {
+      "version": "9.3.5",
+      "isInstalled": true,
+      "creationTime": "10/24/2025 18:12:36 +00:00"
+    },
+    "Volo.Abp.AuditLogging.Pro": {
+      "version": "9.3.5",
+      "isInstalled": true,
+      "creationTime": "10/24/2025 18:12:36 +00:00"
+    },
+    "Volo.CmsKit.Pro": {
+      "version": "9.3.5",
+      "isInstalled": true,
+      "creationTime": "10/24/2025 18:12:36 +00:00"
+    },
+    "Volo.Abp.Identity.Pro": {
+      "version": "9.3.5",
+      "isInstalled": true,
+      "creationTime": "10/24/2025 18:12:36 +00:00"
+    },
+    "Volo.Abp.Account.Pro": {
+      "version": "9.3.5",
+      "isInstalled": true,
+      "creationTime": "10/24/2025 18:12:36 +00:00"
+    },
+    "Volo.Abp.SettingManagement": {
+      "version": "9.3.5",
+      "isInstalled": true,
+      "creationTime": "10/24/2025 18:12:36 +00:00"
+    },
+    "Volo.Abp.PermissionManagement": {
+      "version": "9.3.5",
+      "isInstalled": true,
+      "creationTime": "10/24/2025 18:12:36 +00:00"
+    },
+    "Volo.Abp.FeatureManagement": {
+      "version": "9.3.5",
+      "isInstalled": true,
+      "creationTime": "10/24/2025 18:12:36 +00:00"
+    }
+  },
+  "folders": {
+    "items": {
+      "src": {},
+      "test": {}
+    }
+  },
+  "packages": {
+    "DIREKT_SATIS.Application": {
+      "path": "src/DIREKT_SATIS.Application/DIREKT_SATIS.Application.abppkg",
+      "folder": "src"
+    },
+    "DIREKT_SATIS.Application.Tests": {
+      "path": "test/DIREKT_SATIS.Application.Tests/DIREKT_SATIS.Application.Tests.abppkg",
+      "folder": "test"
+    },
+    "DIREKT_SATIS.Domain.Shared": {
+      "path": "src/DIREKT_SATIS.Domain.Shared/DIREKT_SATIS.Domain.Shared.abppkg",
+      "folder": "src"
+    },
+    "DIREKT_SATIS.Application.Contracts": {
+      "path": "src/DIREKT_SATIS.Application.Contracts/DIREKT_SATIS.Application.Contracts.abppkg",
+      "folder": "src"
+    },
+    "DIREKT_SATIS.HttpApi": {
+      "path": "src/DIREKT_SATIS.HttpApi/DIREKT_SATIS.HttpApi.abppkg",
+      "folder": "src"
+    },
+    "DIREKT_SATIS.HttpApi.Client": {
+      "path": "src/DIREKT_SATIS.HttpApi.Client/DIREKT_SATIS.HttpApi.Client.abppkg",
+      "folder": "src"
+    },
+    "DIREKT_SATIS.AuthServer": {
+      "path": "src/DIREKT_SATIS.AuthServer/DIREKT_SATIS.AuthServer.abppkg",
+      "folder": "src"
+    },
+    "DIREKT_SATIS.HttpApi.Host": {
+    "path": "src/DIREKT_SATIS.HttpApi.Host/DIREKT_SATIS.HttpApi.Host.abppkg",
+    "folder": "src"
+    },
+    "DIREKT_SATIS.EntityFrameworkCore.Tests": {
+      "path": "test/DIREKT_SATIS.EntityFrameworkCore.Tests/DIREKT_SATIS.EntityFrameworkCore.Tests.abppkg",
+      "folder": "test"
+    },
+    "DIREKT_SATIS.EntityFrameworkCore": {
+      "path": "src/DIREKT_SATIS.EntityFrameworkCore/DIREKT_SATIS.EntityFrameworkCore.abppkg",
+      "folder": "src"
+    },
+    "DIREKT_SATIS.TestBase": {
+      "path": "test/DIREKT_SATIS.TestBase/DIREKT_SATIS.TestBase.abppkg",
+      "folder": "test"
+    },
+    "DIREKT_SATIS.Domain.Tests": {
+      "path": "test/DIREKT_SATIS.Domain.Tests/DIREKT_SATIS.Domain.Tests.abppkg",
+      "folder": "test"
+    },
+    "DIREKT_SATIS.HttpApi.Client.ConsoleTestApp": {
+      "path": "test/DIREKT_SATIS.HttpApi.Client.ConsoleTestApp/DIREKT_SATIS.HttpApi.Client.ConsoleTestApp.abppkg",
+      "folder": "test"
+    },
+    "DIREKT_SATIS.DbMigrator": {
+      "path": "src/DIREKT_SATIS.DbMigrator/DIREKT_SATIS.DbMigrator.abppkg",
+      "folder": "src"
+    },
+    "DIREKT_SATIS.Web.Public": {
+      "path": "src/DIREKT_SATIS.Web.Public/DIREKT_SATIS.Web.Public.abppkg",
+      "folder": "src"
+    },
+    "DIREKT_SATIS.Domain": {
+      "path": "src/DIREKT_SATIS.Domain/DIREKT_SATIS.Domain.abppkg",
+      "folder": "src"
+    }
+  }
+}

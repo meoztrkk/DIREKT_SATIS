@@ -1,0 +1,4 @@
+image:
+  repository: "direkt_satis/angular"
+  tag: "latest"
+  pullPolicy: IfNotPresent

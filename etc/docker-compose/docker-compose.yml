@@ -1,0 +1,165 @@
+services:
+  direkt_satis-angular:
+    image: direkt_satis-angular:latest
+    container_name: direkt_satis-angular
+    build:
+      context: ../../
+      dockerfile: angular/Dockerfile.local
+    ports:
+      - "4200:80"
+    depends_on:
+      - direkt_satis-api
+    volumes:
+      - ./dynamic-env.json://usr/share/nginx/html/dynamic-env.json
+    networks:
+      - abp-network
+
+  direkt_satis-api:
+    image: direkt_satis-api:latest
+    container_name: direkt_satis-api
+    hostname: direkt_satis-api
+    build:
+      context: ../../
+      dockerfile: src/DIREKT_SATIS.HttpApi.Host/Dockerfile.local
+    environment:
+      - ASPNETCORE_URLS=https://+:8081;http://+:8080;
+      - Kestrel__Certificates__Default__Path=/app/certs/localhost.pfx
+      - Kestrel__Certificates__Default__Password=838e32a6-5334-4ad0-a831-a1d208fb037b
+      - App__SelfUrl=https://localhost:44388
+      - App__AngularUrl=http://localhost:4200
+      - App_CorsOrigins=http://localhost:4200
+      - App__HealthCheckUrl=http://direkt_satis-api:8080/health-status
+      - AuthServer__RequireHttpsMetadata=false
+      - AuthServer__Authority=http://direkt_satis-authserver:8080
+      - AuthServer__MetaAddress=https://localhost:44317
+      - App__MVCPublicUrl=https://localhost:44391
+      - ConnectionStrings__Default=Data Source=sql-server;Initial Catalog=DIREKT_SATIS;User Id=sa;Password=myPassw0rd;MultipleActiveResultSets=true;TrustServerCertificate=True;
+      - Redis__Configuration=redis
+    ports:
+      - "44379:8081"
+    depends_on:
+      sql-server:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: on-failure    
+    volumes:
+      - ./certs:/app/certs
+    networks:
+      - abp-network
+  
+  direkt_satis-authserver:
+    image: direkt_satis-authserver:latest
+    container_name: direkt_satis-authserver
+    build:
+      context: ../../
+      dockerfile: src/DIREKT_SATIS.AuthServer/Dockerfile.local
+    environment:
+      - ASPNETCORE_URLS=https://+:8081;http://+:8080;
+      - App__SelfUrl=https://localhost:44317
+      - App__CorsOrigins=http://localhost:4200,https://localhost:44379
+      - App__HealthCheckUrl=http://direkt_satis-authserver:8080/health-status
+      - AuthServer__RequireHttpsMetadata=false
+      - AuthServer__Authority=https://localhost:44317
+      - Kestrel__Certificates__Default__Path=/app/certs/localhost.pfx
+      - Kestrel__Certificates__Default__Password=838e32a6-5334-4ad0-a831-a1d208fb037b
+      - ConnectionStrings__Default=Data Source=sql-server;Initial Catalog=DIREKT_SATIS;User Id=sa;Password=myPassw0rd;MultipleActiveResultSets=true;TrustServerCertificate=True;
+      - Redis__Configuration=redis
+    ports:
+      - "44317:8081"
+    depends_on:
+      sql-server:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: on-failure
+    volumes:
+      - ./certs:/app/certs
+    networks:
+      - abp-network
+
+  direkt_satis-web-public:
+    image: direkt_satis-web-public:latest
+    container_name: direkt_satis-web-public
+    build:
+      context: ../../
+      dockerfile: src/DIREKT_SATIS.Web.Public/Dockerfile.local
+    environment:
+      - ASPNETCORE_URLS=https://+:8081;http://+:8080;
+      - Kestrel__Certificates__Default__Path=/app/certs/localhost.pfx
+      - Kestrel__Certificates__Default__Password=838e32a6-5334-4ad0-a831-a1d208fb037b
+      - App__SelfUrl=https://localhost:44391
+      - App__HealthCheckUrl=http://direkt_satis-web-public:8080/health-status
+      - AuthServer__RequireHttpsMetadata=false
+      - AuthServer__IsOnK8s=true      
+      - RemoteServices__Default__BaseUrl=http://direkt_satis-api:8080
+      - AuthServer__Authority=https://localhost:44317/    
+      - AuthServer__MetaAddress=http://direkt_satis-authserver:8080
+      - RemoteServices__AbpAccountPublic__BaseUrl=http://direkt_satis-authserver:8080
+      - ConnectionStrings__Default=Data Source=sql-server;Initial Catalog=DIREKT_SATIS;User Id=sa;Password=myPassw0rd;MultipleActiveResultSets=true;TrustServerCertificate=True;
+      - Redis__Configuration=redis
+    ports:
+      - "44391:8081"
+    depends_on:
+      sql-server:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: on-failure
+    volumes:
+      - ./certs:/app/certs
+    networks:
+      - abp-network  
+  db-migrator:
+    image: direkt_satis-db-migrator:latest
+    container_name: db-migrator
+    build:
+      context: ../../
+      dockerfile: src/DIREKT_SATIS.DbMigrator/Dockerfile.local
+    environment:
+      - OpenIddict__Applications__DIREKT_SATIS_App__RootUrl=http://localhost:4200
+      - OpenIddict__Applications__DIREKT_SATIS_Swagger__RootUrl=https://localhost:44379
+      - OpenIddict__Applications__DIREKT_SATIS_Web_Public__RootUrl=https://localhost:44391
+      - ConnectionStrings__Default=Data Source=sql-server;Initial Catalog=DIREKT_SATIS;User Id=sa;Password=myPassw0rd;MultipleActiveResultSets=true;TrustServerCertificate=True;
+      - Redis__Configuration=redis
+    restart: on-failure
+    depends_on:
+      sql-server:
+        condition: service_healthy
+    networks:
+      - abp-network    
+  
+  sql-server:
+    container_name: sql-server
+    image: mcr.microsoft.com/azure-sql-edge:1.0.7
+    ports:
+      - "1434:1433"
+    environment:
+      SA_PASSWORD: "myPassw0rd"
+      ACCEPT_EULA: "Y"
+    volumes:
+      - sqldata:/var/opt/mssql
+    networks:
+      - abp-network
+    healthcheck:
+      test: /opt/mssql-tools/bin/sqlcmd -S sql-server -U sa -P "myPassw0rd" -Q "SELECT 1" -C -b -o /dev/null
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+  redis:
+    container_name: redis
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - abp-network  
+    healthcheck:
+      test: ["CMD", "redis-cli","ping"]      
+volumes:
+  sqldata:
+    name: direkt_satis_sqldata
+networks:
+  abp-network:
+    name: direkt_satis-network
+    driver: bridge

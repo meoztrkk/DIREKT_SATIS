@@ -1,0 +1,25 @@
+{
+  "production": true,
+  "application": {
+    "baseUrl":"http://localhost:4200",
+    "name": "DIREKT_SATIS",
+    "logoUrl": ""
+  },
+  "oAuthConfig": {
+    "issuer": "https://localhost:44317/",
+    "redirectUri": "http://localhost:4200",
+    "clientId": "DIREKT_SATIS_App",
+    "responseType": "code",
+    "scope": "offline_access openid profile email phone DIREKT_SATIS"
+  },
+  "apis": {
+    "default": {
+      "url": "https://localhost:44379",
+      "rootNamespace": "DIREKT_SATIS"
+    },
+    "AbpAccountPublic": {
+      "url": "https://localhost:44317",
+      "rootNamespace": "AbpAccountPublic"
+    }
+  }
+}

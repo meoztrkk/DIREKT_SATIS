@@ -1,0 +1,17 @@
+volumes:
+  direkt_satis_rabbitmq:
+networks:
+  direkt_satis:
+    external: true
+
+services:
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:3.12.7-management-alpine
+    volumes:
+      - direkt_satis_rabbitmq:/var/lib/rabbitmq
+    networks:
+      - direkt_satis
+    ports:
+      - "15672:15672"
+      - "5672:5672"

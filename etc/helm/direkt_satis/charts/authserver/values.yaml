@@ -1,0 +1,4 @@
+image:
+  repository: "direkt_satis/authserver"
+  tag: "latest"
+  pullPolicy: IfNotPresent

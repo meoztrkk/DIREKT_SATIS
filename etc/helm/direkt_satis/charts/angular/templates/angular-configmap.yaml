@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-{{ .Chart.Name }}-configmap
+data:
+  dynamic-env.json: |-
+    {
+        "production": "true",
+        "application": {
+            "baseUrl": "{{ include "direkt_satis.hosts.angular" . }}",
+            "name": "DIREKT_SATIS",
+            "logoUrl": ""
+        },
+        "oAuthConfig": {
+            "issuer": "{{ include "direkt_satis.hosts.authserver" . }}",
+            "redirectUri": "{{ include "direkt_satis.hosts.angular" . }}",
+            "requireHttps": "true",
+            "clientId": "DIREKT_SATIS_App",
+            "responseType": "code",
+            "scope": "offline_access DIREKT_SATIS",
+            "strictDiscoveryDocumentValidation": false,
+            "skipIssuerCheck": true
+        },
+        "apis": {
+            "default": {
+                "url": "{{ include "direkt_satis.hosts.httpapi" . }}",
+                "rootNamespace": "DIREKT_SATIS"
+            }
+        }
+    }
